@@ -1,6 +1,6 @@
 {
   "name": "pug-loc-debugger",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Program to highlight loc position on pug tokens/nodes",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jbsulli/pug-loc.git"
+    "url": "git+https://github.com/jbsulli/pug-loc-debugger.git"
   },
   "keywords": [
     "pug",
@@ -18,7 +18,14 @@
   "author": "Joshua Sullivan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jbsulli/pug-loc/issues"
+    "url": "https://github.com/jbsulli/pug-loc-debugger/issues"
   },
-  "homepage": "https://github.com/jbsulli/pug-loc#readme"
+  "homepage": "https://github.com/jbsulli/pug-loc-debugger#readme",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "clear": "0.0.1"
+  },
+  "bin": {
+    "pug-loc-debugger": "./index.js"
+  }
 }

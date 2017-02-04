@@ -1,3 +1,6 @@
+#!/usr/bin/env node
 "use strict";
 
-console.log('Working!');
+var command = require('./src/command.js');
+
+command.showScreen('main');
