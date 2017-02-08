@@ -19,11 +19,28 @@ module.exports = {
     
     lexer: {
         prompt:[
-            "What case (file in test/cases folder)?"
+            "What case (file in test/cases folder)?",
+            "(defaults to first file in folder)"
         ],
         response: file => {
-            loc.setStage('lexer', file);
-            showScreen('lexerFile');
+            if(loc.setStage('lexer', file)){
+                showScreen('lexerFile');
+            } else {
+                showScreen('lexerFileNotFound');
+            }
+        }
+    },
+    
+    lexerFileNotFound: {
+        prompt:[
+            "Lexer file not found, please try again. What case?"
+        ],
+        response: file => {
+            if(loc.setStage('lexer', file)){
+                showScreen('lexerFile');
+            } else {
+                showScreen('lexerFileNotFound');
+            }
         }
     },
     
@@ -31,7 +48,17 @@ module.exports = {
     lexerFile: {
         screen: () => loc.screen(),
         response: {
-            "z": () => loc.previousFile()
+            "z": () => { loc.previousFile(); },
+            "c": () => { loc.nextFile(); },
+            "s": () => { loc.nextToken(); },
+            "w": () => { loc.previousToken(); },
+            "j": () => { loc.setSettings({ json: !loc.settings.json }); },
+            "a": () => { loc.moveEnd(-1); },
+            "d": () => { loc.moveEnd(1); },
+            "q": () => { loc.moveStart(-1); },
+            "e": () => { loc.moveStart(1); },
+            " ": () => { loc.saveExpected(); if(loc.run_pause === loc.pos) loc.run(); else loc.nextToken(); },
+            "r": () => { loc.run(); }
         }
     }
 };

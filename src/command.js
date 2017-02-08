@@ -29,7 +29,7 @@ function showScreen(screen_name){
     var screen = screens[screen_name];
     
     clear();
-    console.log(screen_name);
+    
     current_screen = screen_name;
     redraw++;
     
