@@ -3,6 +3,8 @@ Use this tool to visualize and debug `loc` properties on [Pug](https://pugjs.org
 
 This tool relies on Pug's plugin system to grab tokens/nodes at each stage of the Pug compiler. 
 
+![preview of pug-loc-debugger in action](https://raw.githubusercontent.com/jbsulli/pug-loc-debugger/master/pug-loc-debugger.gif)
+
 ## Install
 
 `npm install -g pug-loc-debugger`
