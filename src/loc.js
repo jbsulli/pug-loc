@@ -1,11 +1,11 @@
 "use strict";
 
 const chalk = require('chalk');
-const clear = require('clear');
 const fs = require('fs');
 const path = require('path');
 const exec = require('child_process').execSync;
 const safeGet = require('./safe-get.js');
+const walk = require('./walk.js');
 
 function Loc(){
     this.stage = 'lexer';
@@ -13,8 +13,8 @@ function Loc(){
     this.pug = undefined;
     
     this.plugin = {
-        postLex: tokens => { this.lexer_tokens = tokens; if(this.stage === 'lexer') throw true; },
-        postParse: ast => { this.parser_ast = ast; if(this.stage === 'parser') throw true; }
+        postLex: tokens => { this.lexer_tokens = tokens; if(this.stage === 'lexer') throw true; return tokens; },
+        postParse: ast => { this.parser_ast = ast; if(this.stage === 'parser') throw true; return ast; }
     };
     
     this.settings = {
@@ -150,6 +150,22 @@ Loc.prototype.getNodes = function(){
         case 'parser': this.getParserLocs(); break;
         default: throw new Error('implement');
     }
+};
+
+Loc.prototype.getParserLocs = function(){
+    this.locs = [];
+    this.tokens = [];
+    
+    walk(this.parser_ast, (node) => {
+        this.tokens.push(node);
+        this.locs.push([
+            safeGet(node, 'loc.filename', 'string'),
+            safeGet(node, 'loc.start.line', 'int') || 1,
+            safeGet(node, 'loc.start.column', 'int') || 1,
+            safeGet(node, 'loc.end.line', 'int') || 1,
+            safeGet(node, 'loc.end.column', 'int') || 1
+        ]);
+    });
 };
 
 Loc.prototype.getRepoData = function(){
@@ -361,11 +377,15 @@ Loc.prototype.screen = function(){
     const save = this.save;
     
     console.log(chalk.gray(this.repo.url + ' ' + this.repo.branch + ' ' + this.stage));
-    console.log(chalk[match ? 'green' : 'red'](this.pug_src_file.replace(/\.pug$/, '')), chalk.gray('@'), chalk.white(this.pos + 1));
+    if(match){
+        console.log(chalk.green(this.pug_src_file.replace(/\.pug$/, '')), chalk.gray('@'), chalk.white(this.pos + 1));
+    } else {
+        console.log(chalk.red(this.pug_src_file.replace(/\.pug$/, '')), chalk.gray('@'), chalk.white(this.pos + 1));
+    }
     console.log(chalk.gray('  actual:'), chalk.white(`${a[1]}:${a[2]}`) + chalk.gray(' to ') + chalk.white(`${a[3]}:${a[4]}`));
     console.log(chalk.gray('expected:'), chalk.white(`${e[1] === -1 ? '??' : e[1]}:${e[2] === -1 ? '??' : e[2]}`) + chalk.gray(' to ') + chalk.white(`${e[3] === -1 ? '??' : e[3]}:${e[4] === -1 ? '??' : e[4]}`));
     console.log(chalk.gray(' will be:'), chalk.white(`${save[1]}:${save[2]}`) + chalk.gray(' to ') + chalk.white(`${save[3]}:${save[4]}`));
-    console.log('    ' + (this.settings.json ? ' ' : '') + chalk.white((tok ? ('' + tok.type).toUpperCase() || 'undefined' : 'undefined')));
+    console.log('    ' + (this.settings.json ? ' ' : '') + chalk.white((tok ? ('' + (tok.type || 'Attr')).toUpperCase() || 'undefined' : 'undefined')));
     
     if(this.settings.show_token){
         console.log(JSON.stringify(tok, null, 4));
