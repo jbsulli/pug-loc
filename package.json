@@ -1,6 +1,6 @@
 {
   "name": "pug-loc-debugger",
-  "version": "0.0.2",
+  "version": "1.0.1",
   "description": "Program to highlight loc position on pug tokens/nodes",
   "main": "index.js",
   "scripts": {
